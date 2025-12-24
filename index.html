@@ -139,12 +139,12 @@
         // ==========================================
         // 1. RESOURCES CONFIG
         // ==========================================
-        const MUSIC_URL = "./audio.mp3";
+        const MUSIC_URL = "audio.mp3";
         let bgMusic = new Audio(MUSIC_URL);
         bgMusic.loop = true; bgMusic.volume = 1.0;
 
         const loader = new THREE.TextureLoader();
-        const photoFiles = ['./img/a1.jpg', './img/a2.jpg', './img/a3.jpg', './img/a4.jpg']; //Thay hoặc thêm số ảnh dòng 319 sửa ở đây và folder img
+        const photoFiles = ['img/a1.jpg', 'img/a2.jpg', 'img/a3.jpg', 'img/a4.jpg']; //Thay hoặc thêm số ảnh dòng 319 sửa ở đây và folder img
         const photoTextures = [];
         photoFiles.forEach((f, i) => photoTextures[i] = loader.load(f));
 
@@ -309,10 +309,13 @@
             const borderGeo = new THREE.PlaneGeometry(9, 9);
             const borderMat = new THREE.MeshBasicMaterial({ color: 0xFFD700 });
 
-            for (let i = 0; i < 7; i++) { //số ảnh hiển thị 4
+            for (let i = 0; i < photoFiles.length; i++) {
                 const mat = new THREE.MeshBasicMaterial({
-                    map: photoTextures[i], side: THREE.DoubleSide
+                    map: photoTextures[i],
+                    side: THREE.DoubleSide,
+                    transparent: true
                 });
+
                 const mesh = new THREE.Mesh(geo, mat);
                 const border = new THREE.Mesh(borderGeo, borderMat);
                 border.position.z = -0.1;
@@ -320,10 +323,12 @@
 
                 mesh.visible = false;
                 mesh.scale.set(0, 0, 0);
+
                 scene.add(mesh);
                 photoMeshes.push(mesh);
             }
         }
+
 
         function createDecorations() {
             // ===============================
@@ -454,13 +459,6 @@
 
             }
 
-            
-            photoMeshes.forEach((mesh, i) => {
-                if (!mesh.material.map && photoTextures[i]) {
-                    mesh.material.map = photoTextures[i]; mesh.material.needsUpdate = true;
-                }
-            });
-
             if (state === 'TREE') {
                 if (loveTextMesh) loveTextMesh.visible = false;
 
@@ -477,7 +475,7 @@
                 titleMesh.visible = false; starMesh.visible = false;
 
                 const baseAngle = groupGold.rotation.y;
-                const angleStep = (Math.PI * 2) / 5;
+                const angleStep = (Math.PI * 2) / photoMeshes.length;
                 let bestIdx = 0; let maxZ = -999;
 
                 photoMeshes.forEach((mesh, i) => {
